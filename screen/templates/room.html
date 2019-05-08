@@ -1,0 +1,102 @@
+<!-- chat/templates/chat/room.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Room</title>
+</head>
+<body>
+    <script type="text/javascript" src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+<canvas id="canvas" style="position: absolute"></canvas>
+<button id="close">关闭</button>
+
+</body>
+<script>
+var BLANK_IMG ='data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+var down=false
+var canvas = document.getElementById('canvas')
+  , g = canvas.getContext('2d')
+    var roomName = {{ room_name_json }};
+
+//按下监听
+canvas.addEventListener('mousedown', function(e){
+down=true
+res=JSON.stringify({
+                operation: 'down',
+                xP: e.layerX,
+                yP: e.layerY,
+              })
+touchSocket.onmessage(res)
+
+})
+//提起监听
+canvas.addEventListener('mouseup', function(e){
+down=false
+res=JSON.stringify({
+                operation: 'up',
+                xP: e.layerX,
+                yP: e.layerY,
+              })
+touchSocket.onmessage(res)
+})
+//滑动监听
+canvas.addEventListener('mousemove', function(e){
+console.log(down)
+if (down){
+res=JSON.stringify({
+                operation: 'move',
+                xP: e.layerX,
+                yP: e.layerY,
+              })
+touchSocket.onmessage(res)
+}
+})
+
+var chatSocket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/screen/' + roomName + '/');
+    chatSocket.binaryType = 'blob'
+    chatSocket.onopen = function() {
+          console.log('onopen', arguments)
+          chatSocket.send(roomName)
+
+        }
+    chatSocket.onmessage = function(message) {
+          var blob = new Blob([message.data], {type: 'image/jpeg'})
+          var URL = window.URL || window.webkitURL
+          var img = new Image()
+          img.onload = function() {
+            canvas.width = 377
+            canvas.height = 724
+            g.drawImage(img, 0, 0,377,724)
+            img.onload = null
+            img.src = BLANK_IMG
+            img = null
+            u = null
+            blob = null
+          }
+          var u = URL.createObjectURL(blob)
+          img.src = u
+    };
+    chatSocket.onclose = function(e) {
+        chatSocket.close()
+        console.log('onclose', arguments)
+    };
+     var touchSocket=new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/minitouch/' + roomName + '/');
+
+    touchSocket.onopen=function() {
+          console.log('onopen', arguments,"minitouch")
+        }
+     touchSocket.onmessage= function(addr) {
+            console.log(addr)
+          touchSocket.send(addr)
+        }
+      touchSocket.onclose = function(e) {
+        touchSocket.close()
+        console.log('onclose', arguments)
+    };
+
+</script>
+</html>
