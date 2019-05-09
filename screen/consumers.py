@@ -13,6 +13,7 @@ class ChatConsumer(WebsocketConsumer):
         self.t=""
     def connect(self):
         self.accept()
+        print("cap 链接")
 
     def disconnect(self, close_code):
         print(type(self.t),"……")
@@ -33,17 +34,20 @@ class ChatConsumer(WebsocketConsumer):
 
 
     def receive(self, text_data):
-
-
-        t=threading.Thread(target=self.send_cap,args=(self,))
+        print("123")
+        if text_data=="emulator-5554":
+            port=1717
+        else:
+            port=1718
+        t=threading.Thread(target=self.send_cap,args=(self,port,))
         t.start()
         self.t=t
         import os
         print("存入",self.t,os.getpid())
 
 
-    def send_cap(self,xx):
-        Minicap('localhost', 1717, Banner()).consume(xx)
+    def send_cap(self,xx,port):
+        Minicap('localhost', port, Banner()).consume(xx)
 
 
 class Banner:

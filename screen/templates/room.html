@@ -57,8 +57,9 @@ var chatSocket = new WebSocket(
         '/ws/screen/' + roomName + '/');
     chatSocket.binaryType = 'blob'
     chatSocket.onopen = function() {
+        chatSocket.send(roomName)
           console.log('onopen', arguments)
-          chatSocket.send(roomName)
+
 
         }
     chatSocket.onmessage = function(message) {
@@ -87,6 +88,7 @@ var chatSocket = new WebSocket(
         '/ws/minitouch/' + roomName + '/');
 
     touchSocket.onopen=function() {
+        touchSocket.send(JSON.stringify({'device':roomName}))
           console.log('onopen', arguments,"minitouch")
         }
      touchSocket.onmessage= function(addr) {

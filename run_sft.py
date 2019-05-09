@@ -24,12 +24,12 @@ def devices_info():
 
     return list,count
 class adb_cmd():
-    def __init__(self,devices_name):
+    def __init__(self,devices_name,capport,touchport):
         self.devices_name=devices_name
+        self.capport=capport
+        self.touchport=touchport
         cmd_prop = "adb -s " + devices_name+ " shell getprop ro.product.cpu.abi"
-        print(cmd_prop)
         cmd_respone = os.popen(cmd_prop).readlines()
-        print(cmd_respone)
         self.device_type = (cmd_respone[0].split('\n')[0])
 
 
@@ -46,10 +46,11 @@ class adb_cmd():
         cmd_respone = os.popen(cmd_push_minicap).readlines()
 
         # 添加执行权限
-        os.popen("adb shell chmod 777 /data/local/tmp/minicap")
-        os.popen("adb shell chmod 777 /data/local/tmp/minicap.so")
+        os.popen("adb  -s " + self.devices_name + "  shell chmod 777 /data/local/tmp/minicap")
+        os.popen("adb  -s " + self.devices_name + " shell chmod 777 /data/local/tmp/minicap.so")
 
-        cmd_cap_forward = "adb -s " + self.devices_name + " forward  tcp:" + "1718" + " localabstract:minicap"
+        cmd_cap_forward = "adb -s " + self.devices_name + " forward  tcp:" + self.capport + " localabstract:minicap"
+
         cmd_respone = os.popen(cmd_cap_forward).readlines()
 
         cmd_px = "adb -s " + self.devices_name + " shell wm size"
@@ -67,14 +68,14 @@ class adb_cmd():
         #推送文件到手机
         cmd_push_minitouch = "adb -s " + self.devices_name + " push" + " ./stf/stf_libs/" + self.device_type + "/minitouch" + " /data/local/tmp"
         cmd_respone = os.popen(cmd_push_minitouch).readlines()
-        os.popen("adb shell chmod 777 /data/local/tmp/minitouch")
+        os.popen("adb -s " + self.devices_name + " shell chmod 777 /data/local/tmp/minitouch")
 
         cmd_run_minitouch = " adb -s " + self.devices_name + " shell  /data/local/tmp/minitouch"
         print("www", cmd_run_minitouch)
         os.popen(cmd_run_minitouch)
 
 
-        cmd_touch_forward = "adb -s " + self.devices_name + " forward  tcp:" + "1112" + " localabstract:minitouch"
+        cmd_touch_forward = "adb -s " + self.devices_name + " forward  tcp:" + self.touchport + " localabstract:minitouch"
 
         cmd_respone = os.popen(cmd_touch_forward)
 if __name__=="__main__":

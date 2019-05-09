@@ -8,10 +8,8 @@
 <body>
 <script type="text/javascript" src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
 
-<div >
-<button onclick="connect()">链接</button>
-</div>
 
+<div id="device"></div>
 
 </body>
 <script>
@@ -21,16 +19,21 @@ $.ajax({
     dataType: 'json',
     success:function(res) {
         console.log(res['data'])
+        for (var i=0;i<res['count'];i++){
+            $("#device").append('<div style="width:100px;height:150px;border:solid 1px"  onclick="connect(this)">'+res['data'][i]['device'] +'</div>')
+        }
            }
            })
 
-function connect(){
+function connect(e){
+console.log($(e).text())
     $.ajax({
         url:'/screen/stfdevice',
-        type:"get",
+        type:"post",
+        data:{'device':$(e).text()},
         dataType: 'json',
         success:function(res) { console.log(res['data'])
-            window.location.href='/screen/1'
+            window.location.href='/screen/'+$(e).text()
 
                }
                })

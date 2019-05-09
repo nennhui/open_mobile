@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 import json
 from django.http import HttpResponse,HttpResponseRedirect,JsonResponse
 from run_sft import  devices_info,adb_cmd
-
+import  csv
 def standardRes():
     res = {}
     res['status'] = 0
@@ -16,10 +16,15 @@ def index(request):
 
 def stf_deivce(request):
     res=standardRes()
-    devicename="emulator-5554"
-    adb_cmd(devicename).start_cap()
-    adb_cmd(devicename).start_touch()
-    print('^^^^^^^^^^^^^^^^^^^^^^^')
+    devicename=request.POST['device']
+    if devicename=='emulator-5554':
+        capport="1717"
+        touchport="1111"
+    else:
+        capport="1718"
+        touchport = "1112"
+    adb_cmd(devicename,capport,touchport).start_cap()
+    adb_cmd(devicename,capport,touchport).start_touch()
     return JsonResponse(res
     )
 
@@ -28,7 +33,6 @@ def stf_deivce(request):
 def get_devices(request):
     res=standardRes()
     devices = devices_info()
-    print(devices[0],"……")
     res['data']=devices[0]
     res['count'] = devices[1]
     return JsonResponse(res
