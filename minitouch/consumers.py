@@ -31,17 +31,16 @@ class ChatConsumer(WebsocketConsumer):
             operation=res['operation']
             x_P=res['xP']
             y_p=res['yP']
-            self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.__socket.connect(("localhost", self.port))
-            # text_data=(text_data.split(','))
-            # print(text_data,int(text_data[0]))
-            # x = int(int(text_data[0])*(1080 / 377))
-            # y = int(int(text_data[1])*(1920 / 724))
+            c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            c.connect(("localhost", self.port))
+            res=c.recv(1024).decode('utf-8')
+            _, contacts, max_x, max_y, pressure = (res).split("\n")[1].split(' ')
 
-            x = int(int(x_P)*(19199 / 377))
-            y = int(int(y_p)*(10799 / 724))
 
-            # f = "d 0 {} {} 50\nc\nu 0\nc\n ".format(x, y)
+            x = int(int(x_P)*(int(max_x) / 377))
+            y = int(int(y_p)*(int(max_y) / 724))
+
+            f = "d 0 {} {} 50\nc\nu 0\nc\n ".format(x, y)
             if operation=="down":
                 f="d 0 {} {} 50\nc\n ".format( x,y)
 
@@ -53,8 +52,8 @@ class ChatConsumer(WebsocketConsumer):
             print(f)
             f = (f.encode('utf-8'))
 
-            self.__socket.sendall(f)
-            self.__socket.close()
+            c.sendall(f)
+            c.close()
 
 
 
