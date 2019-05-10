@@ -5,6 +5,8 @@ class ChatConsumer(WebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.port=''
+        self.max_x=''
+        self.max_y=''
 
     def connect(self):
         self.accept()
@@ -34,11 +36,14 @@ class ChatConsumer(WebsocketConsumer):
             c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             c.connect(("localhost", self.port))
             res=c.recv(1024).decode('utf-8')
-            _, contacts, max_x, max_y, pressure = (res).split("\n")[1].split(' ')
+            try:
+                _, contacts, self.max_x, self.max_y, pressure = (res).split("\n")[1].split(' ')
+            except:
+                pass
 
 
-            x = int(int(x_P)*(int(max_x) / 377))
-            y = int(int(y_p)*(int(max_y) / 724))
+            x = int(int(x_P)*(int(self.max_x) / 377))
+            y = int(int(y_p)*(int(self.max_y) / 724))
 
             f = "d 0 {} {} 50\nc\nu 0\nc\n ".format(x, y)
             if operation=="down":

@@ -130,3 +130,4 @@ CHANNEL_LAYERS = {
         },
     },
 }
+ALLOWED_HOSTS = [ '192.168.101.168']
