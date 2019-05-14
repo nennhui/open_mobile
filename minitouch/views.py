@@ -12,18 +12,3 @@ def touch(request):
     mc.click(int(x)*scale_x,int(y)*scale_y)
     return render(request,"index.html",{})
 
-def physical (request):
-    """
-        获取命令，进行物理操作
-    """
-
-    cmd=request.POST.get('cmd')
-    os.system("adb shell input keyevent {}", format(Keycode.cmd))
-
-
-class Keycode():
-    home="KEYCODE_HOME"
-    menu="KEYCODE_MENU"
-    back='KEYCODE_BACK'
-    light='224'    #唤起屏幕
-    dark='223'     #锁屏
