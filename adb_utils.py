@@ -75,5 +75,15 @@ class adb_cmd():
         cmd_push_minitouch = "adb -s " + device + " push" + " ./stf/stf_libs/" + device_type + "/minitouch" + " /data/local/tmp"
         cmd_respone = os.popen(cmd_push_minitouch).readlines()
 
+    def run_monkey(package, count=100, levels=1):
+        P = package
+        count = count
+        level = " -v " * levels
+
+        appswitch = " --pct-appswitch"
+        "包名 --throttle 100 --ignore-crashes --ignore-timeouts --ignore-security-exceptions --ignore-native-crashes --monitor-native-crashes -v -v -v"
+        adb_cmd = "adb shell monkey -p {}{}  –s 1540475754297 {}".format(P, str(level), str(count))
+        print(adb_cmd)
+        cmd_respone = os.popen(adb_cmd)
 if __name__=="__main__":
     adb_cmd().deivce_Api()
